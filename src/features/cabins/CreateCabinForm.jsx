@@ -12,10 +12,11 @@ import toast from "react-hot-toast";
 import FormRow2 from '../../ui/FormRow'
 
 
-function CreateCabinForm() {
-  const { register, handleSubmit, reset, getValues, formState } = useForm();
+function  CreateCabinForm({cabinToEdit = {}}) {
+  const {id: editId, ...editValue} = cabinToEdit;
+  const isEditSession  = Boolean(editId);
+  const { register, handleSubmit, reset, getValues, formState } = useForm({defaultValues: isEditSession ? editValue: {}});
   const {errors} = formState;
-  console.log(errors);
   const queryClient = useQueryClient();
   const { mutate, isLoading: isCreating } = useMutation({
     mutationFn: createCabin,
@@ -86,7 +87,7 @@ function CreateCabinForm() {
       </FormRow2>
 
       <FormRow2 label="Cabin photo">
-        <FileInput id="image" accept="image/*" type="file" {...register("image", { required: "the image is required" })} />
+        <FileInput id="image" accept="image/*" type="file" {...register("image", { required:  isEditSession ? false : "the image is required" })} />
       </FormRow2>
 
       <FormRow2>
@@ -94,7 +95,7 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isCreating}>Add cabin</Button>
+        <Button disabled={isCreating}>{isEditSession ? 'Edit' :  'Add cabin'}</Button>
       </FormRow2>
     </Form>
   );
